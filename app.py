@@ -7,7 +7,7 @@ import streamlit as st
 from supabase import create_client, Client
 
 st.set_page_config(
-    page_title="Roll of Us — Aca & Akmal",
+    page_title="Roll of Us — AA",
     page_icon="📷",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -102,7 +102,7 @@ def signed_photo(path: str) -> Optional[str]:
     if not path:
         return None
     try:
-        result = supabase.storage.from_("memories").create_signed_url(path, 60 * 60)
+        result = supabase.storage.from_("memories").create_signed_url(path, 20 * 20)
         return result.get("signedURL") or result.get("signedUrl")
     except Exception:
         return None
