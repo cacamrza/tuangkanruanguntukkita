@@ -123,6 +123,7 @@ div[data-testid="stImage"] img {
 }
 </style>
 """, unsafe_allow_html=True)
+
 # ---------- Vintage editorial styling ----------
 st.markdown("""
 <style>
