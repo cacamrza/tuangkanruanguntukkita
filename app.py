@@ -47,48 +47,33 @@ def get_secret(name: str, default: Optional[str] = None):
         return os.environ.get(name, default)
 
 def make_supabase(url: str, key: str) -> Client:
-    # Do not cache an authenticated Supabase client globally: Streamlit serves many users.
-    # Each browser session must have its own client to avoid sharing auth state.
+    # Runs only on Streamlit's server. Never use this service key in browser JavaScript.
     return create_client(url, key)
 
 def config_values():
     url = get_secret("SUPABASE_URL")
-    key = get_secret("SUPABASE_ANON_KEY")
-    if not url or not key:
-        st.error("Konfigurasi Supabase belum ditemukan. Isi `SUPABASE_URL` dan `SUPABASE_ANON_KEY` di Streamlit Secrets.")
-        st.code('SUPABASE_URL = "https://PROJECT-ID.supabase.co"\nSUPABASE_ANON_KEY = "sb_publishable_..."')
+    key = get_secret("SUPABASE_SERVICE_ROLE_KEY")
+    pin = get_secret("SHARED_PIN")
+    if not url or not key or not pin:
+        st.error("Konfigurasi belum lengkap. Isi SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, dan SHARED_PIN di Streamlit Secrets.")
+        st.code('SUPABASE_URL = "https://PROJECT-ID.supabase.co"\nSUPABASE_SERVICE_ROLE_KEY = "YOUR_SUPABASE_SERVICE_ROLE_KEY"\nSHARED_PIN = "26092026"')
         st.stop()
-    return url, key
+    return url, key, str(pin)
 
-url, anon_key = config_values()
-supabase = make_supabase(url, anon_key)
-# Restore the current browser session only into this per-session client.
-if st.session_state.get("access_token") and st.session_state.get("refresh_token"):
-    try:
-        supabase.auth.set_session(st.session_state.access_token, st.session_state.refresh_token)
-        if st.session_state.get("user") is None:
-            st.session_state.user = supabase.auth.get_user().user
-    except Exception:
-        st.session_state.user = None
-        st.session_state.access_token = None
-        st.session_state.refresh_token = None
+url, service_key, SHARED_PIN = config_values()
+supabase = make_supabase(url, service_key)
 
-if "session" not in st.session_state:
-    st.session_state.session = None
-if "user" not in st.session_state:
-    st.session_state.user = None
-if "access_token" not in st.session_state:
-    st.session_state.access_token = None
-if "refresh_token" not in st.session_state:
-    st.session_state.refresh_token = None
+# Session state is scoped to each visitor's Streamlit browser session.
+if "unlocked" not in st.session_state:
+    st.session_state.unlocked = False
 if "show_add" not in st.session_state:
     st.session_state.show_add = False
 if "edit_memory" not in st.session_state:
     st.session_state.edit_memory = None
 
-def user_email():
-    user = st.session_state.user
-    return getattr(user, "email", None) if user else None
+# Fixed non-personal actor UUID. The SQL patch removes auth.users foreign keys because
+# this app uses a server-verified shared PIN rather than individual Supabase Auth users.
+SERVER_ACTOR_ID = "00000000-0000-0000-0000-000000000001"
 
 def signed_photo(path: str) -> Optional[str]:
     if not path:
@@ -117,7 +102,7 @@ def save_uploaded_photos(files):
         suffix = (file.name.rsplit(".", 1)[-1] if "." in file.name else "jpg").lower()
         if suffix not in {"jpg", "jpeg", "png", "webp", "gif"}:
             suffix = "jpg"
-        path = f"{st.session_state.user.id}/{uuid.uuid4().hex}.{suffix}"
+        path = f"shared/{uuid.uuid4().hex}.{suffix}"
         content_type = file.type or "image/jpeg"
         supabase.storage.from_("memories").upload(
             path, raw,
@@ -133,30 +118,47 @@ def delete_photo(path: str):
         pass
 
 def login_screen():
-    st.markdown('<div class="eyebrow">▦ PRIVATE FILM DIARY · VOL. 01</div>', unsafe_allow_html=True)
-    left, right = st.columns([1.1, .9], gap="large")
+    st.markdown("""
+    <div class="eyebrow">▦ PRIVATE FILM DIARY · VOL. 01</div>
+    <style>
+    .pin-camera { background:#c18c60; border-radius:15px; padding:18px; max-width:420px; margin:1.5rem auto 0; box-shadow:0 18px 32px #715c3c25; transform:rotate(.5deg); }
+    .pin-camera-top { background:#b98255; border-radius:10px; padding:18px; display:flex; align-items:center; justify-content:center; gap:20px; flex-wrap:wrap; }
+    .pin-camera-label { width:100%; display:flex; justify-content:space-between; color:#60412c; font-family:'DM Mono',monospace; letter-spacing:.12em; font-size:.7rem; }
+    .pin-lens { width:112px;height:112px;border:8px solid #3d342b;outline:2px dashed #e5d0aa;outline-offset:-15px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 40% 35%,#64857b,#214c43 52%,#172a25 70%);color:#e9b578;font-size:28px;box-shadow:0 7px 10px #4e2e20aa; }
+    .pin-date { display:grid;gap:5px;font-family:'DM Mono',monospace;font-size:.75rem; }
+    .pin-date span { background:#ae7d54;border:1px solid #dfb88e;color:#fff4e3;padding:2px 9px;border-radius:3px; }
+    .pin-paper { background:#fffdf8;border-radius:5px 5px 12px 12px;padding:22px;text-align:center;margin-top:0; }
+    .pin-paper small { color:#8c8173; }
+    </style>
+    """, unsafe_allow_html=True)
+    left, right = st.columns([1.05, .95], gap="large")
     with left:
-        st.markdown('<div class="hero"><h1>Every little thing<br><em>worth remembering.</em></h1><p>A tiny archive of our ordinary magic. Cerita kita, frame by frame — kept here for whenever we need to remember.</p><p style="font-family:Playfair Display,serif;font-style:italic;font-size:1.25rem">“Somewhere between hello and always.”</p><div class="small-mono">26 · 09 · 26 &nbsp; / &nbsp; A + A</div></div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="hero"><h1>Every little thing<br><em>worth remembering.</em></h1>'
+            '<p>A tiny archive of our ordinary magic. Cerita kita, frame by frame — kept here for whenever we need to remember.</p>'
+            '<p style="font-family:Playfair Display,serif;font-style:italic;font-size:1.25rem">“Somewhere between hello and always.”</p>'
+            '<div class="small-mono">26 · 09 · 26 &nbsp; / &nbsp; A + A</div></div>',
+            unsafe_allow_html=True
+        )
     with right:
-        st.markdown('<div class="paper-card">', unsafe_allow_html=True)
-        st.markdown("### ♧ Welcome to our little archive")
-        st.caption("Login dengan akun privat Aca atau Akmal.")
-        with st.form("login_form", clear_on_submit=False):
-            email = st.text_input("Email", placeholder="your@email.com")
-            password = st.text_input("Password", type="password", placeholder="Password akun")
+        st.markdown(
+            '<div class="pin-camera"><div class="pin-camera-top">'
+            '<div class="pin-camera-label"><span>ROLL OF US</span><span>●</span></div>'
+            '<div class="pin-lens">♥</div><div class="pin-date"><span>26</span><span>09</span><span>26</span></div>'
+            '</div><div class="pin-paper"><div class="eyebrow">♧ THE SECRET DATE</div></div></div>',
+            unsafe_allow_html=True
+        )
+        with st.form("shared_pin_form", clear_on_submit=True):
+            pin_entry = st.text_input("PIN bersama", placeholder="DDMMYYYY", max_chars=8, type="password", label_visibility="collapsed")
             submitted = st.form_submit_button("Open our archive ↗", use_container_width=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.caption("♧ private by design · just for us two")
         if submitted:
-            try:
-                auth = supabase.auth.sign_in_with_password({"email": email.strip(), "password": password})
-                st.session_state.session = auth.session
-                st.session_state.user = auth.user
-                st.session_state.access_token = auth.session.access_token
-                st.session_state.refresh_token = auth.session.refresh_token
+            # PIN is compared on the server; it is never placed in a URL or client-side script.
+            if pin_entry.strip() == SHARED_PIN:
+                st.session_state.unlocked = True
                 st.rerun()
-            except Exception as exc:
-                st.error("Login gagal. Periksa email/password dan pastikan akun sudah dibuat di Supabase Authentication.")
-                st.caption(str(exc))
+            else:
+                st.error("PIN belum cocok. Coba lagi, ya ♡")
     st.markdown("---")
     st.caption("PRIVATE BY DESIGN · JUST FOR US TWO")
 
@@ -188,7 +190,7 @@ def add_or_edit_form(memories):
                 "location": location.strip(), "story": story.strip(),
                 "favorite": favorite.strip(), "note": note.strip(),
                 "photo_paths": old_paths + paths,
-                "created_by": st.session_state.user.id,
+                "created_by": SERVER_ACTOR_ID,
             }
             if existing:
                 supabase.table("memories").update(payload).eq("id", existing["id"]).execute()
@@ -211,15 +213,10 @@ def archive_screen():
     with b:
         st.write("")
         st.write("")
-        if st.button("↪ Logout", use_container_width=True):
-            try:
-                supabase.auth.sign_out()
-            except Exception:
-                pass
-            st.session_state.session = None
-            st.session_state.user = None
-            st.session_state.access_token = None
-            st.session_state.refresh_token = None
+        if st.button("↪ Lock diary", use_container_width=True):
+            st.session_state.unlocked = False
+            st.session_state.show_add = False
+            st.session_state.edit_memory = None
             st.rerun()
     try:
         memories = list_memories()
@@ -311,7 +308,7 @@ def archive_screen():
         letter_text = st.text_area("Tulis atau edit surat", value=default_letter, height=160, key="letter_text")
         if st.button("Save letter"):
             try:
-                payload = {"body": letter_text, "updated_by": st.session_state.user.id}
+                payload = {"body": letter_text, "updated_by": SERVER_ACTOR_ID}
                 if saved_letter:
                     supabase.table("letters").update(payload).eq("id", saved_letter["id"]).execute()
                 else:
@@ -330,7 +327,7 @@ def archive_screen():
     if submitted:
         if fav.strip():
             try:
-                supabase.table("favorites").insert({"category": cat, "text": fav.strip(), "created_by": st.session_state.user.id}).execute()
+                supabase.table("favorites").insert({"category": cat, "text": fav.strip(), "created_by": SERVER_ACTOR_ID}).execute()
                 st.rerun()
             except Exception as exc:
                 st.error(f"Gagal menyimpan favorit: {exc}")
@@ -350,7 +347,7 @@ def archive_screen():
     st.caption("MADE OF LITTLE MOMENTS, KEPT WITH LOVE · ACA & AKMAL ♡")
 
 def main():
-    if st.session_state.user is None:
+    if not st.session_state.unlocked:
         login_screen()
     else:
         archive_screen()
