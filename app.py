@@ -34,6 +34,23 @@ st.markdown("""
     color: #8b796c !important;
     opacity: 1 !important;
 }
+
+/* Smaller vintage diary photos */
+div[data-testid="stImage"] {
+    max-width: 280px !important;
+    width: 100% !important;
+    margin-top: 12px;
+    margin-bottom: 16px;
+}
+
+div[data-testid="stImage"] img {
+    width: 100% !important;
+    height: 180px !important;
+    object-fit: cover !important;
+    border-radius: 10px !important;
+    border: 1px solid #e5d4bf;
+    box-shadow: 0 5px 14px rgba(69, 43, 28, 0.12);
+}
 </style>
 """, unsafe_allow_html=True)
 # ---------- Vintage editorial styling ----------
