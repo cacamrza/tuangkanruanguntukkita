@@ -23,6 +23,76 @@ st.markdown("""
     font-weight: 600 !important;
 }
 
+/* Vintage scrapbook cards */
+.memory-counter {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    padding: 32px;
+    min-height: 245px;
+    color: #f8eee0;
+    background:
+        linear-gradient(110deg, rgba(27, 20, 17, .97),
+        rgba(53, 34, 25, .82)),
+        #2b211c;
+    border: 1px solid #6e4a37;
+    box-shadow: 0 10px 24px rgba(74, 45, 28, .13);
+}
+
+.memory-counter .eyebrow,
+.memory-quote .eyebrow {
+    font-family: monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #c85d3c;
+}
+
+.memory-counter .days {
+    font-family: Georgia, serif;
+    font-size: 76px;
+    line-height: 1;
+    color: #fff6e9;
+    margin: 22px 0 12px;
+}
+
+.memory-counter .since {
+    border-top: 1px solid rgba(255, 238, 218, .3);
+    padding-top: 15px;
+    font-family: monospace;
+    font-size: 11px;
+    letter-spacing: 1.4px;
+    color: #e6cdb0;
+}
+
+.memory-quote {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    padding: 30px;
+    min-height: 245px;
+    background:
+        radial-gradient(ellipse at 85% 15%,
+        rgba(201, 154, 112, .16), transparent 45%),
+        #f7ecdc;
+    border: 1px solid #ead9c3;
+    box-shadow: 0 8px 20px rgba(90, 62, 40, .08);
+}
+
+.memory-quote blockquote {
+    margin: 22px 0 14px;
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 24px;
+    line-height: 1.5;
+    color: #33251f;
+}
+
+.memory-quote .signature {
+    color: #bd593b;
+    font-family: Georgia, serif;
+    font-size: 16px;
+}
 /* Teks di dalam kolom input */
 .stTextInput input {
     color: #29211d !important;
