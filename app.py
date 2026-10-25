@@ -12,7 +12,30 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
+st.markdown("""
+<style>
+/* Label input: gunakan warna gelap agar terbaca */
+.stTextInput label,
+.stTextInput label p,
+.stForm label,
+.stForm label p {
+    color: #49372d !important;
+    font-weight: 600 !important;
+}
 
+/* Teks di dalam kolom input */
+.stTextInput input {
+    color: #29211d !important;
+    background-color: #fffdf8 !important;
+}
+
+/* Teks petunjuk di dalam kolom */
+.stTextInput input::placeholder {
+    color: #8b796c !important;
+    opacity: 1 !important;
+}
+</style>
+""", unsafe_allow_html=True)
 # ---------- Vintage editorial styling ----------
 st.markdown("""
 <style>
