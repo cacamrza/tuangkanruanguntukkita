@@ -502,15 +502,17 @@ def archive_screen():
 
     if submitted:
         if fav.strip():
-            try:
-                supabase.table("favorites").insert({
-                    "category": cat,
-                    "text": fav.strip()
-                }).execute()
-                st.success("Favorite berhasil ditambahkan ♡")
-                st.rerun()
-            except Exception as exc:
-                st.error(f"Gagal menambahkan favorite: {exc}")
+        try:
+            supabase.table("favorites").insert({
+                "category": cat,
+                "text": fav.strip(),
+                "created_by": st.session_state.user.id
+            }).execute()
+
+            st.success("Favorite berhasil ditambahkan ♡")
+            st.rerun()
+        except Exception as exc:
+            st.error(f"Gagal menambahkan favorite: {exc}")
         else:
             st.warning("Isi favorit kecil kita dulu ya ♡")
 
