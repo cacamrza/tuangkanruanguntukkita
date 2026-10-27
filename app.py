@@ -437,6 +437,12 @@ def archive_screen():
 
     st.markdown("---")
     st.markdown("## A letter for us")
+        letter_text = st.text_area(
+    "Tulis surat baru di sini ♡",
+    value="",
+    height=160,
+    key="letter_text"
+)
     try:
         result = supabase.table("letters").select("*").limit(1).execute()
         saved_letter = result.data[0] if result.data else None
@@ -448,14 +454,7 @@ def archive_screen():
         st.markdown(
     f"<div class='ily-message'>{latest_message}</div>",
     unsafe_allow_html=True
-)
-        letter_text = st.text_area(
-    "Tulis surat baru di sini ♡",
-    value="",
-    height=160,
-    key="letter_text"
-)
-        
+)    
 if st.button("♡ Save new letter", key="save_new_letter"):
     new_text = st.session_state.get("letter_text", "").strip()
 
