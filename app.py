@@ -488,7 +488,8 @@ def archive_screen():
     
     st.markdown("---")
     st.markdown("## Our kind of favorite")
-        with st.form("favorite_form", clear_on_submit=True):
+    
+    with st.form("favorite_form", clear_on_submit=True):
         cat = st.selectbox(
             "Kategori",
             ["FOOD", "INSIDE JOKES", "PLACES", "LITTLE THINGS"]
