@@ -504,7 +504,7 @@ if st.button("♡ Save new letter", key="save_new_letter"):
         submitted = st.form_submit_button("Add favorite +")
     if submitted:
         if fav.strip():
-           try:
+try:
     result = supabase.table("favorites").select("*").execute()
     favorites = result.data or []
 except Exception as exc:
