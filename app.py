@@ -102,6 +102,54 @@ div[data-testid="stImage"] img {
     border: 1px solid #e5d4bf;
     box-shadow: 0 5px 14px rgba(69, 43, 28, 0.12);
 }
+/* Romantic letter section */
+.ily-message {
+    background: linear-gradient(135deg, #fffaf1, #f4e4d3);
+    border: 1px solid #dfc3a5;
+    border-left: 5px solid #c45b3c;
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin: 16px 0 22px 0;
+    color: #49372f;
+    font-family: Georgia, serif;
+    font-size: 20px;
+    line-height: 1.8;
+    box-shadow: 0 5px 16px rgba(91, 57, 39, 0.08);
+}
+
+.ily-message::before {
+    content: "♡  A LITTLE NOTE FOR YOU";
+    display: block;
+    color: #bd593c;
+    font-family: sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+div[data-testid="stTextArea"] textarea {
+    background: #fffaf4 !important;
+    color: #49372f !important;
+    border: 1px solid #dfc3a5 !important;
+    border-radius: 12px !important;
+    line-height: 1.8 !important;
+    padding: 16px !important;
+}
+
+div[data-testid="stTextArea"] label {
+    color: #a64f35 !important;
+    font-weight: 600 !important;
+}
+
+div[data-testid="stButton"] button {
+    border-radius: 10px !important;
+    transition: all 0.2s ease;
+}
+
+div[data-testid="stButton"] button:hover {
+    border-color: #c45b3c !important;
+    color: #c45b3c !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -388,6 +436,11 @@ def archive_screen():
         st.write("")
 
     st.markdown("---")
+    latest_message = (
+    saved_letter.get("body", "ILY")
+    if saved_letter
+    else "ILY"
+)
     st.markdown("## A letter for us")
     try:
         result = supabase.table("letters").select("*").limit(1).execute()
@@ -396,7 +449,10 @@ def archive_screen():
         saved_letter = None
     default_letter = (saved_letter or {}).get("body", "")
     with st.expander("Open the letter ♡"):
-        st.markdown("ILY")
+        st.markdown(
+    f"<div class='ily-message'>{latest_message}</div>",
+    unsafe_allow_html=True
+)
         letter_text = st.text_area("Tulis atau edit surat", value=default_letter, height=160, key="letter_text")
         
 if st.button("Save letter"):
