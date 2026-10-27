@@ -500,21 +500,23 @@ def archive_screen():
         )
         submitted = st.form_submit_button("Add favorite +")
 
-    if submitted:
-        if fav.strip():
-        try:
-            supabase.table("favorites").insert({
-                "category": cat,
-                "text": fav.strip(),
-                "created_by": st.session_state.user.id
-            }).execute()
+    
+        if submitted:
+            if fav.strip():
+                try:
+                    supabase.table("favorites").insert({
+                        "category": cat,
+                        "text": fav.strip(),
+                        "created_by": st.session_state.user.id
+                    }).execute()
 
-            st.success("Favorite berhasil ditambahkan ♡")
-            st.rerun()
-        except Exception as exc:
-            st.error(f"Gagal menambahkan favorite: {exc}")
-        else:
-            st.warning("Isi favorit kecil kita dulu ya ♡")
+                    st.success("Favorite berhasil ditambahkan ♡")
+                    st.rerun()
+
+                except Exception as exc:
+                    st.error(f"Gagal menambahkan favorite: {exc}")
+            else:
+                st.warning("Isi favorit kecil kita dulu ya ♡")
 
     try:
         result = supabase.table("favorites").select("*").execute()
