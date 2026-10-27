@@ -22,8 +22,6 @@ st.markdown("""
     color: #49372d !important;
     font-weight: 600 !important;
 }
-
-
 /* Vintage card: days counting */
 .memory-counter {
     position: relative;
@@ -41,7 +39,6 @@ st.markdown("""
     );
     box-shadow: 0 9px 22px rgba(95, 48, 32, 0.16);
 }
-
 .memory-counter::after {
     content: "♡";
     position: absolute;
@@ -51,12 +48,10 @@ st.markdown("""
     font-size: 76px;
     color: rgba(255, 235, 215, 0.13);
 }
-
 .memory-counter p {
     color: #ffe1ca;
     letter-spacing: 2px;
 }
-
 /* Vintage paper: notes */
 .memory-quote {
     position: relative;
@@ -73,30 +68,25 @@ st.markdown("""
     );
     box-shadow: 0 8px 20px rgba(95, 65, 45, 0.09);
 }
-
 .memory-quote p {
     color: #49352e;
     font-family: Georgia, serif;
     font-style: italic;
     line-height: 1.8;
 }
-
 .memory-quote strong {
     color: #b95738;
 }
-
 /* Teks di dalam kolom input */
 .stTextInput input {
     color: #29211d !important;
     background-color: #fffdf8 !important;
 }
-
 /* Teks petunjuk di dalam kolom */
 .stTextInput input::placeholder {
     color: #8b796c !important;
     opacity: 1 !important;
 }
-
 /* Smaller vintage diary photos */
 div[data-testid="stImage"] {
     max-width: 280px !important;
@@ -104,7 +94,6 @@ div[data-testid="stImage"] {
     margin-top: 12px;
     margin-bottom: 16px;
 }
-
 div[data-testid="stImage"] img {
     width: 100% !important;
     height: 180px !important;
