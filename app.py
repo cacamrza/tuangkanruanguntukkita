@@ -14,7 +14,7 @@ st.set_page_config(
 )
 st.markdown("""
 <style>
-/* Label input: gunakan warna gelap agar terbaca */
+/* Label input: gunakan warna terang agar terbaca */
 .stTextInput label,
 .stTextInput label p,
 .stForm label,
@@ -30,7 +30,7 @@ st.markdown("""
     border-radius: 18px;
     padding: 30px;
     min-height: 245px;
-    color: #fff3e6;
+    color: #8f1e1e;
     background: linear-gradient(
         135deg,
         #b95738 0%,
@@ -49,7 +49,7 @@ st.markdown("""
     color: rgba(255, 235, 215, 0.13);
 }
 .memory-counter p {
-    color: #ffe1ca;
+    color: #912c3d;
     letter-spacing: 2px;
 }
 /* Vintage paper: notes */
