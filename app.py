@@ -445,7 +445,6 @@ def archive_screen():
         key="letter_text"
     )
 
-
     try:
         result = supabase.table("letters").select("*").limit(1).execute()
         saved_letter = result.data[0] if result.data else None
@@ -461,18 +460,14 @@ def archive_screen():
             unsafe_allow_html=True
         )
 
+    
     if st.button("♡ Save new letter", key="save_new_letter"):
         new_text = st.session_state.get("letter_text", "").strip()
 
         if not new_text:
-            st.warning("Tulis suratnya dulu ya ♡")
+            st.warning("Tulis notes-nya dulu ya ♡")
         else:
             try:
-                if saved_letter and saved_letter.get("body", "").strip():
-                    supabase.table("letter_archive").insert({
-                        "body": saved_letter["body"]
-                    }).execute()
-
                 payload = {
                     "body": new_text,
                     "updated_by": SERVER_ACTOR_ID
@@ -486,11 +481,11 @@ def archive_screen():
                     supabase.table("letters").insert(payload).execute()
 
                 st.session_state["letter_text"] = ""
-                st.success("Surat baru tersimpan ♡")
+                st.success("Little note berhasil diganti ♡")
                 st.rerun()
 
             except Exception as exc:
-                st.error(f"Gagal menyimpan surat: {exc}")
+                st.error(f"Gagal mengganti notes: {exc}")
     
     st.markdown("---")
     st.markdown("## Our kind of favorite")
