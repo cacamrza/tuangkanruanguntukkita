@@ -437,69 +437,63 @@ def archive_screen():
 
     st.markdown("---")
     st.markdown("## A letter for us")
-letter_text = st.text_area(
-    "Tulis surat baru di sini ♡",
-    value="",
-    height=160,
-    key="letter_text"
-)
 
-try:
-    result = supabase.table("letters").select("*").limit(1).execute()
-    saved_letter = result.data[0] if result.data else None
-except Exception:
-    saved_letter = None
-
-latest_message = (saved_letter or {}).get("body", "ILY")
-
-with st.expander("Open the letter ♡"):
-    st.markdown(
-        f"<div class='ily-message'>{latest_message}</div>",
-        unsafe_allow_html=True
+    letter_text = st.text_area(
+        "Tulis surat baru di sini ♡",
+        value="",
+        height=160,
+        key="letter_text"
     )
 
-if st.button("♡ Save new letter", key="save_new_letter"):
-    new_text = st.session_state.get("letter_text", "").strip()
 
-    if not new_text:
-        st.warning("Tulis suratnya dulu ya ♡")
-    else:
-        try:
-            if saved_letter and saved_letter.get("body", "").strip():
-                supabase.table("letter_archive").insert({
-                    "body": saved_letter["body"]
-                }).execute()
+    try:
+        result = supabase.table("letters").select("*").limit(1).execute()
+        saved_letter = result.data[0] if result.data else None
+    except Exception as exc:
+        saved_letter = None
+        st.error(f"Gagal memuat surat: {exc}")
 
-            payload = {
-                "body": new_text,
-                "updated_by": SERVER_ACTOR_ID
-            }
+    latest_message = (saved_letter or {}).get("body", "ILY")
 
-            if saved_letter:
-                supabase.table("letters").update(payload).eq(
-                    "id", saved_letter["id"]
-                ).execute()
-            else:
-                supabase.table("letters").insert(payload).execute()
+    with st.expander("Open the letter ♡"):
+        st.markdown(
+            f"<div class='ily-message'>{latest_message}</div>",
+            unsafe_allow_html=True
+        )
 
-            st.session_state["letter_text"] = ""
-            st.success("Surat baru tersimpan ♡")
-            st.rerun()
+    if st.button("♡ Save new letter", key="save_new_letter"):
+        new_text = st.session_state.get("letter_text", "").strip()
 
-        except Exception as exc:
-            st.error(f"Gagal menyimpan surat: {exc}")
+        if not new_text:
+            st.warning("Tulis suratnya dulu ya ♡")
+        else:
+            try:
+                if saved_letter and saved_letter.get("body", "").strip():
+                    supabase.table("letter_archive").insert({
+                        "body": saved_letter["body"]
+                    }).execute()
 
-            st.session_state["letter_text"] = ""
-            st.success("Surat baru tersimpan ♡")
-            st.rerun()
+                payload = {
+                    "body": new_text,
+                    "updated_by": SERVER_ACTOR_ID
+                }
 
-        except Exception as exc:
-            st.error(f"Gagal menyimpan surat: {exc}")
+                if saved_letter:
+                    supabase.table("letters").update(payload).eq(
+                        "id", saved_letter["id"]
+                    ).execute()
+                else:
+                    supabase.table("letters").insert(payload).execute()
 
+                st.session_state["letter_text"] = ""
+                st.success("Surat baru tersimpan ♡")
+                st.rerun()
+
+            except Exception as exc:
+                st.error(f"Gagal menyimpan surat: {exc}")
     
     st.markdown("---")
     st.markdown("## Our kind of favorite")
-
     with st.form("favorite_form", clear_on_submit=True):
         cat = st.selectbox(
             "Kategori",
