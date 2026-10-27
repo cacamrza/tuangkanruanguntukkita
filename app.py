@@ -488,7 +488,7 @@ def archive_screen():
     
     st.markdown("---")
     st.markdown("## Our kind of favorite")
-    with st.form("favorite_form", clear_on_submit=True):
+        with st.form("favorite_form", clear_on_submit=True):
         cat = st.selectbox(
             "Kategori",
             ["FOOD", "INSIDE JOKES", "PLACES", "LITTLE THINGS"]
@@ -499,21 +499,20 @@ def archive_screen():
         )
         submitted = st.form_submit_button("Add favorite +")
 
-        if submitted:
+    if submitted:
         if fav.strip():
             try:
                 supabase.table("favorites").insert({
                     "category": cat,
                     "text": fav.strip()
                 }).execute()
-
                 st.success("Favorite berhasil ditambahkan ♡")
                 st.rerun()
-
             except Exception as exc:
                 st.error(f"Gagal menambahkan favorite: {exc}")
         else:
             st.warning("Isi favorit kecil kita dulu ya ♡")
+
     try:
         result = supabase.table("favorites").select("*").execute()
         favorites = result.data or []
