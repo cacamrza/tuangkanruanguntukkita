@@ -7,7 +7,7 @@ import streamlit as st
 from supabase import create_client, Client
 
 st.set_page_config(
-    page_title="Roll of Us — AA",
+    page_title="Roll of Us — A",
     page_icon="📷",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -248,7 +248,7 @@ def login_screen():
             '<div class="hero"><h1>Every little thing<br><em>worth remembering.</em></h1>'
             '<p>A tiny archive of our ordinary magic. Cerita kita, frame by frame — kept here for whenever we need to remember.</p>'
             '<p style="font-family:Playfair Display,serif;font-style:italic;font-size:1.25rem">“Somewhere between hello and always.”</p>'
-            '<div class="small-mono">26 · 09 · 26 &nbsp; / &nbsp; A + A</div></div>',
+            '<div class="small-mono">our memories &nbsp; / &nbsp; A </div></div>',
             unsafe_allow_html=True
         )
     with right:
@@ -281,8 +281,8 @@ def add_or_edit_form(memories):
         default_date = date.fromisoformat(existing["memory_date"]) if existing and existing.get("memory_date") else date.today()
         memory_date = st.date_input("Tanggal pertemuan", value=default_date)
         title = st.text_input("Judul kenangan", value=(existing or {}).get("title", ""), max_chars=100, placeholder="Contoh: Sushi after work")
-        location = st.text_input("Lokasi", value=(existing or {}).get("location", ""), max_chars=150, placeholder="Di mana kalian bertemu?")
-        story = st.text_area("Cerita kecil", value=(existing or {}).get("story", ""), height=130, placeholder="Apa yang paling berkesan hari itu?")
+        location = st.text_input("Lokasi", value=(existing or {}).get("location", ""), max_chars=150, placeholder="Tujuan hari itu kemana?")
+        story = st.text_area("Cerita kecil", value=(existing or {}).get("story", ""), height=130, placeholder="Produktivitas apa yang kalian lakukan?")
         favorite = st.text_input("Makanan / favorit hari itu", value=(existing or {}).get("favorite", ""), max_chars=180)
         note = st.text_input("Catatan tambahan", value=(existing or {}).get("note", ""), max_chars=180)
         uploads = st.file_uploader("Foto kenangan (pilih beberapa)", type=["jpg", "jpeg", "png", "webp"], accept_multiple_files=True)
@@ -415,7 +415,7 @@ def archive_screen():
         saved_letter = None
     default_letter = (saved_letter or {}).get("body", "")
     with st.expander("Open the letter ♡"):
-        st.markdown("Hai, Aca. Semoga kita selalu punya tempat untuk menyimpan hal-hal kecil, foto yang sedikit blur, makanan yang kita bagi, dan hari biasa yang terasa istimewa karena dijalani bersama.")
+        st.markdown("ILY")
         letter_text = st.text_area("Tulis atau edit surat", value=default_letter, height=160, key="letter_text")
         if st.button("Save letter"):
             try:
@@ -455,7 +455,7 @@ def archive_screen():
                         st.error(str(exc))
 
     st.markdown("---")
-    st.caption("MADE OF LITTLE MOMENTS, KEPT WITH LOVE · ACA & AKMAL ♡")
+    st.caption("MADE OF LITTLE MOMENTS, KEPT WITH LOVE ·A ♡")
 
 def main():
     if not st.session_state.unlocked:
