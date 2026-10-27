@@ -437,24 +437,27 @@ def archive_screen():
 
     st.markdown("---")
     st.markdown("## A letter for us")
-        letter_text = st.text_area(
+letter_text = st.text_area(
     "Tulis surat baru di sini ♡",
     value="",
     height=160,
     key="letter_text"
 )
-    try:
-        result = supabase.table("letters").select("*").limit(1).execute()
-        saved_letter = result.data[0] if result.data else None
-    except Exception:
-        saved_letter = None
-    latest_message = (saved_letter or {}).get("body", "ILY")
-    default_letter = (saved_letter or {}).get("body", "")
-    with st.expander("Open the letter ♡"):
-        st.markdown(
-    f"<div class='ily-message'>{latest_message}</div>",
-    unsafe_allow_html=True
-)    
+
+try:
+    result = supabase.table("letters").select("*").limit(1).execute()
+    saved_letter = result.data[0] if result.data else None
+except Exception:
+    saved_letter = None
+
+latest_message = (saved_letter or {}).get("body", "ILY")
+
+with st.expander("Open the letter ♡"):
+    st.markdown(
+        f"<div class='ily-message'>{latest_message}</div>",
+        unsafe_allow_html=True
+    )
+
 if st.button("♡ Save new letter", key="save_new_letter"):
     new_text = st.session_state.get("letter_text", "").strip()
 
@@ -462,7 +465,6 @@ if st.button("♡ Save new letter", key="save_new_letter"):
         st.warning("Tulis suratnya dulu ya ♡")
     else:
         try:
-            # Simpan surat lama ke arsip sebelum menggantinya
             if saved_letter and saved_letter.get("body", "").strip():
                 supabase.table("letter_archive").insert({
                     "body": saved_letter["body"]
@@ -479,6 +481,13 @@ if st.button("♡ Save new letter", key="save_new_letter"):
                 ).execute()
             else:
                 supabase.table("letters").insert(payload).execute()
+
+            st.session_state["letter_text"] = ""
+            st.success("Surat baru tersimpan ♡")
+            st.rerun()
+
+        except Exception as exc:
+            st.error(f"Gagal menyimpan surat: {exc}")
 
             st.session_state["letter_text"] = ""
             st.success("Surat baru tersimpan ♡")
