@@ -496,40 +496,62 @@ if st.button("♡ Save new letter", key="save_new_letter"):
         except Exception as exc:
             st.error(f"Gagal menyimpan surat: {exc}")
 
+    
     st.markdown("---")
     st.markdown("## Our kind of favorite")
+
     with st.form("favorite_form", clear_on_submit=True):
-        cat = st.selectbox("Kategori", ["FOOD", "INSIDE JOKES", "PLACES", "LITTLE THINGS"])
-        fav = st.text_input("Favorit kecil kita", placeholder="Makanan, lelucon, atau detail kecil")
+        cat = st.selectbox(
+            "Kategori",
+            ["FOOD", "INSIDE JOKES", "PLACES", "LITTLE THINGS"]
+        )
+        fav = st.text_input(
+            "Favorit kecil kita",
+            placeholder="Makanan, lelucon, atau detail kecil"
+        )
         submitted = st.form_submit_button("Add favorite +")
+
     if submitted:
         if fav.strip():
-try:
-    result = supabase.table("favorites").select("*").execute()
-    favorites = result.data or []
-except Exception as exc:
-    st.error(f"Gagal memuat favorite: {exc}")
-    favorites = []
+            try:
+                supabase.table("favorites").insert({
+                    "category": cat,
+                    "body": fav.strip()
+                }).execute()
+                st.success("Favorite berhasil ditambahkan ♡")
+                st.rerun()
+            except Exception as exc:
+                st.error(f"Gagal menambahkan favorite: {exc}")
+        else:
+            st.warning("Isi favorit kecil kita dulu ya ♡")
 
-if favorites:
-    cols = st.columns(2)
-    for i, item in enumerate(favorites):
-        with cols[i % 2]:
-            st.markdown(
-                f"""<div class="paper-card">
-                <div class="eyebrow">{item.get("category", "LITTLE THINGS")}</div>
-                <p>{item.get("body", "")}</p>
-                </div>""",
-                unsafe_allow_html=True
-            )
-            if st.button("Remove", key=f"favdel_{item['id']}"):
-                try:
-                    supabase.table("favorites").delete().eq(
-                        "id", item["id"]
-                    ).execute()
-                    st.rerun()
-                except Exception as exc:
-                    st.error(str(exc))
+    try:
+        result = supabase.table("favorites").select("*").execute()
+        favorites = result.data or []
+    except Exception as exc:
+        st.error(f"Gagal memuat favorite: {exc}")
+        favorites = []
+
+    if favorites:
+        cols = st.columns(2)
+        for i, item in enumerate(favorites):
+            with cols[i % 2]:
+                st.markdown(
+                    f"""<div class="paper-card">
+                    <div class="eyebrow">{item.get("category", "LITTLE THINGS")}</div>
+                    <p>{item.get("body", "")}</p>
+                    </div>""",
+                    unsafe_allow_html=True
+                )
+                if st.button("Remove", key=f"favdel_{item['id']}"):
+                    try:
+                        supabase.table("favorites").delete().eq(
+                            "id", item["id"]
+                        ).execute()
+                        st.rerun()
+                    except Exception as exc:
+                        st.error(str(exc))
+
     st.markdown("---")
     st.caption("MADE OF LITTLE MOMENTS, KEPT WITH LOVE ·A ♡")
 
