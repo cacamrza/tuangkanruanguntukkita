@@ -264,7 +264,7 @@ def add_or_edit_form(memories):
         title = st.text_input("Judul kenangan", value=(existing or {}).get("title", ""), max_chars=100, placeholder="Contoh: Sushi after work")
         location = st.text_input("Lokasi", value=(existing or {}).get("location", ""), max_chars=150, placeholder="Tujuan hari itu kemana?")
         story = st.text_area("Cerita kecil", value=(existing or {}).get("story", ""), height=130, placeholder="Produktivitas apa yang kalian lakukan?")
-        favorite = st.text_input("Makanan / favorit hari itu", value=(existing or {}).get("favorite", ""), max_chars=180)
+        favorite = st.text_input("Makanan / favorit hari itu", value=(existing or {}).get("mam", ""), max_chars=180)
         note = st.text_input("Catatan tambahan", value=(existing or {}).get("note", ""), max_chars=180)
         uploads = st.file_uploader("Foto kenangan (pilih beberapa)", type=["jpg", "jpeg", "png", "webp"], accept_multiple_files=True)
         if existing and existing.get("photo_paths"):
@@ -398,17 +398,32 @@ def archive_screen():
     with st.expander("Open the letter ♡"):
         st.markdown("ILY")
         letter_text = st.text_area("Tulis atau edit surat", value=default_letter, height=160, key="letter_text")
-        if st.button("Save letter"):
-            try:
-                payload = {"body": letter_text, "updated_by": SERVER_ACTOR_ID}
-                if saved_letter:
-                    supabase.table("letters").update(payload).eq("id", saved_letter["id"]).execute()
-                else:
-                    supabase.table("letters").insert(payload).execute()
-                st.success("Surat tersimpan ♡")
-                st.rerun()
-            except Exception as exc:
-                st.error(f"Gagal menyimpan surat: {exc}")
+        
+if st.button("Save letter"):
+    try:
+        # Arsipkan surat sebelumnya sebelum menggantinya
+        if saved_letter and saved_letter.get("body", "").strip():
+            supabase.table("letter_archive").insert({
+                "body": saved_letter["body"]
+            }).execute()
+
+        payload = {
+            "body": letter_text,
+            "updated_by": SERVER_ACTOR_ID
+        }
+
+        if saved_letter:
+            supabase.table("letters").update(payload).eq(
+                "id", saved_letter["id"]
+            ).execute()
+        else:
+            supabase.table("letters").insert(payload).execute()
+
+        st.success("Surat baru tersimpan ♡")
+        st.rerun()
+
+    except Exception as exc:
+        st.error(f"Gagal menyimpan surat: {exc}")
 
     st.markdown("---")
     st.markdown("## Our kind of favorite")
