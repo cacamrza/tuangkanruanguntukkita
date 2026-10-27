@@ -23,76 +23,68 @@ st.markdown("""
     font-weight: 600 !important;
 }
 
-/* Vintage scrapbook cards */
+
+/* Vintage card: days counting */
 .memory-counter {
     position: relative;
     overflow: hidden;
-    border-radius: 16px;
-    padding: 32px;
-    min-height: 245px;
-    color: #f8eee0;
-    background:
-        linear-gradient(110deg, rgba(27, 20, 17, .97),
-        rgba(53, 34, 25, .82)),
-        #2b211c;
-    border: 1px solid #6e4a37;
-    box-shadow: 0 10px 24px rgba(74, 45, 28, .13);
-}
-
-.memory-counter .eyebrow,
-.memory-quote .eyebrow {
-    font-family: monospace;
-    font-size: 12px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #c85d3c;
-}
-
-.memory-counter .days {
-    font-family: Georgia, serif;
-    font-size: 76px;
-    line-height: 1;
-    color: #fff6e9;
-    margin: 22px 0 12px;
-}
-
-.memory-counter .since {
-    border-top: 1px solid rgba(255, 238, 218, .3);
-    padding-top: 15px;
-    font-family: monospace;
-    font-size: 11px;
-    letter-spacing: 1.4px;
-    color: #e6cdb0;
-}
-
-.memory-quote {
-    position: relative;
-    overflow: hidden;
-    border-radius: 16px;
+    border: 1px solid #c87858;
+    border-radius: 18px;
     padding: 30px;
     min-height: 245px;
-    background:
-        radial-gradient(ellipse at 85% 15%,
-        rgba(201, 154, 112, .16), transparent 45%),
-        #f7ecdc;
-    border: 1px solid #ead9c3;
-    box-shadow: 0 8px 20px rgba(90, 62, 40, .08);
+    color: #fff3e6;
+    background: linear-gradient(
+        135deg,
+        #b95738 0%,
+        #8d3f2d 55%,
+        #492c27 100%
+    );
+    box-shadow: 0 9px 22px rgba(95, 48, 32, 0.16);
 }
 
-.memory-quote blockquote {
-    margin: 22px 0 14px;
+.memory-counter::after {
+    content: "♡";
+    position: absolute;
+    right: 22px;
+    bottom: 5px;
+    font-family: Georgia, serif;
+    font-size: 76px;
+    color: rgba(255, 235, 215, 0.13);
+}
+
+.memory-counter p {
+    color: #ffe1ca;
+    letter-spacing: 2px;
+}
+
+/* Vintage paper: notes */
+.memory-quote {
+    position: relative;
+    border: 1px solid #e4c9aa;
+    border-left: 5px solid #c76b4a;
+    border-radius: 4px 16px 16px 4px;
+    padding: 28px 30px;
+    min-height: 180px;
+    color: #49352e;
+    background: linear-gradient(
+        135deg,
+        #fffaf1 0%,
+        #f7e7d4 100%
+    );
+    box-shadow: 0 8px 20px rgba(95, 65, 45, 0.09);
+}
+
+.memory-quote p {
+    color: #49352e;
     font-family: Georgia, serif;
     font-style: italic;
-    font-size: 24px;
-    line-height: 1.5;
-    color: #33251f;
+    line-height: 1.8;
 }
 
-.memory-quote .signature {
-    color: #bd593b;
-    font-family: Georgia, serif;
-    font-size: 16px;
+.memory-quote strong {
+    color: #b95738;
 }
+
 /* Teks di dalam kolom input */
 .stTextInput input {
     color: #29211d !important;
@@ -317,7 +309,7 @@ def add_or_edit_form(memories):
             st.caption(str(exc))
 
 def archive_screen():
-    st.markdown('<div class="small-mono">▦ A + A · PRIVATE ARCHIVE · VOL. 01</div>', unsafe_allow_html=True)
+    st.markdown('<div class="small-mono">▦ A · PRIVATE ARCHIVE · VOL. 01</div>', unsafe_allow_html=True)
     a, b = st.columns([4, 1])
     with a:
         st.markdown('<div class="hero"><h1>Our little<br><em>analog diary.</em></h1><p>A collection of the days that felt like forever. Cerita kita, frame by frame — kept here for whenever we need to remember.</p><div class="small-mono">STARTED ON · 26 SEPTEMBER 2026</div></div>', unsafe_allow_html=True)
