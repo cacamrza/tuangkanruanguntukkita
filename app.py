@@ -495,11 +495,12 @@ if st.button("♡ Save new letter", key="save_new_letter"):
         submitted = st.form_submit_button("Add favorite +")
     if submitted:
         if fav.strip():
-            try:
-                supabase.table("favorites").insert({"category": cat, "text": fav.strip(), "created_by": SERVER_ACTOR_ID}).execute()
-                st.rerun()
-            except Exception as exc:
-                st.error(f"Gagal menyimpan favorit: {exc}")
+           try:
+    result = supabase.table("favorites").select("*").execute()
+    favorites = result.data or []
+except Exception as exc:
+    favorites = []
+    st.error(f"Gagal memuat favorit: {exc}")
     if favorites:
         cols = st.columns(2)
         for i, item in enumerate(favorites):
