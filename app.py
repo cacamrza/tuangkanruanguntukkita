@@ -480,7 +480,6 @@ def archive_screen():
                 else:
                     supabase.table("letters").insert(payload).execute()
 
-                st.session_state["letter_text"] = ""
                 st.success("Little note berhasil diganti ♡")
                 st.rerun()
 
@@ -503,10 +502,10 @@ def archive_screen():
     if submitted:
         if fav.strip():
             try:
-                supabase.table("favorites").insert({
-                    "category": cat,
-                    "body": fav.strip()
-                }).execute()
+               supabase.table("favorites").insert({
+    "category": cat,
+    "text": fav.strip()
+}).execute()
                 st.success("Favorite berhasil ditambahkan ♡")
                 st.rerun()
             except Exception as exc:
@@ -528,7 +527,7 @@ def archive_screen():
                 st.markdown(
                     f"""<div class="paper-card">
                     <div class="eyebrow">{item.get("category", "LITTLE THINGS")}</div>
-                    <p>{item.get("body", "")}</p>
+                    <p>{item.get("text", "")}</p>
                     </div>""",
                     unsafe_allow_html=True
                 )
