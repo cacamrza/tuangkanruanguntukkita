@@ -507,7 +507,7 @@ def archive_screen():
                     supabase.table("favorites").insert({
                         "category": cat,
                         "text": fav.strip(),
-                       "created_by": st.session_state.get("user_id")
+                       "created_by": SERVER_ACTOR_ID 
                     }).execute()
 
                     st.success("Favorite berhasil ditambahkan ♡")
