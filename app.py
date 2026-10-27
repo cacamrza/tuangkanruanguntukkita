@@ -436,17 +436,13 @@ def archive_screen():
         st.write("")
 
     st.markdown("---")
-    latest_message = (
-    saved_letter.get("body", "ILY")
-    if saved_letter
-    else "ILY"
-)
     st.markdown("## A letter for us")
     try:
         result = supabase.table("letters").select("*").limit(1).execute()
         saved_letter = result.data[0] if result.data else None
     except Exception:
         saved_letter = None
+    latest_message = (saved_letter or {}).get("body", "ILY")
     default_letter = (saved_letter or {}).get("body", "")
     with st.expander("Open the letter ♡"):
         st.markdown(
